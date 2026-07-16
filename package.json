@@ -22,6 +22,7 @@
     "esbuild": "^0.25.8",
     "esbuild-plugin-pino": "^2.3.3",
     "express": "^5.2.1",
+    "google-auth-library": "^10.9.0",
     "googleapis": "^173.0.0",
     "pg": "^8.22.0",
     "pino": "^9.14.0",

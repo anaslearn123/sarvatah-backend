@@ -1,6 +1,6 @@
-import { google } from "googleapis";
+import { GoogleAuth } from "google-auth-library";
 
-const auth = new google.auth.GoogleAuth({
+const auth = new GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
     private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
@@ -10,11 +10,6 @@ const auth = new google.auth.GoogleAuth({
   ],
 });
 
-const sheets = google.sheets({
-  version: "v4",
-  auth,
-});
-
 export async function saveToGoogleSheet(data: {
   fullName: string;
   email: string;
@@ -22,11 +17,17 @@ export async function saveToGoogleSheet(data: {
   interestedCourse?: string;
   message?: string;
 }) {
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: "Sheet1!A:F",
-    valueInputOption: "USER_ENTERED",
-    requestBody: {
+  const client = await auth.getClient();
+
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+
+  await client.request({
+    url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A:F:append`,
+    method: "POST",
+    params: {
+      valueInputOption: "USER_ENTERED",
+    },
+    data: {
       values: [
         [
           data.fullName,
